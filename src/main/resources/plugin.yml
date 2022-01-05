@@ -1,0 +1,13 @@
+name: @name@
+version: @version@
+main: @package@.@name@
+authors: [R4G3_BABY]
+description: "@description@"
+website: @website@
+api-version: "1.13"
+
+commands:
+  SimpleMOTD:
+    description: Manage plugin functionalities
+    aliases: [smotd]
+    usage: /<command> [args]
