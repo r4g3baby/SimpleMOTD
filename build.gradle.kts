@@ -16,7 +16,7 @@ dependencies {
     compileOnly("org.bukkit:bukkit:1.8.8-R0.1-SNAPSHOT")
 
     implementation("net.swiftzer.semver:semver:1.2.0")
-    implementation("org.bstats:bstats-bukkit:2.2.1")
+    implementation("org.bstats:bstats-bukkit:3.0.0")
 }
 
 tasks {
