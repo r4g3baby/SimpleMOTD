@@ -1,22 +1,22 @@
 package com.r4g3baby.simplemotd.utils.updater
 
-import com.google.gson.Gson
-import com.google.gson.JsonObject
 import net.swiftzer.semver.SemVer
 import org.bukkit.plugin.Plugin
+import org.json.simple.JSONObject
+import org.json.simple.parser.JSONParser
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.function.BiConsumer
 
-class UpdateChecker(plugin: Plugin, pluginId: Int, consumer: BiConsumer<Boolean, String>) {
-    private val _spigotApi = "https://api.spigotmc.org/simple/0.2/index.php?action=getResource&id=$pluginId"
+class UpdateChecker(plugin: Plugin, pluginID: Int, consumer: (Boolean, String) -> Unit) {
+    private val _spigotApi = "https://api.spigotmc.org/simple/0.2/index.php?action=getResource&id=$pluginID"
 
     init {
         plugin.server.scheduler.runTaskAsynchronously(plugin) {
+            val currentVersion = SemVer.parse(plugin.description.version)
+            val conn = URL(_spigotApi).openConnection() as HttpURLConnection
             try {
-                val conn = URL(_spigotApi).openConnection() as HttpURLConnection
                 conn.requestMethod = "GET"
                 conn.useCaches = false
                 conn.connectTimeout = 3000
@@ -24,19 +24,18 @@ class UpdateChecker(plugin: Plugin, pluginId: Int, consumer: BiConsumer<Boolean,
                 conn.setRequestProperty("Accept", "application/json")
                 conn.setRequestProperty("User-Agent", "${plugin.name}/${plugin.description.version}")
 
-                val reader = BufferedReader(InputStreamReader(conn.inputStream))
-                val jsonObject = Gson().fromJson(reader, JsonObject::class.java)
-                val latestVersion = SemVer.parse(jsonObject.get("current_version").asString)
-                val currentVersion = SemVer.parse(plugin.description.version)
+                BufferedReader(InputStreamReader(conn.inputStream)).use { reader ->
+                    val jsonObject = JSONParser().parse(reader) as JSONObject
+                    val latestVersion = SemVer.parse(jsonObject["current_version"] as String)
 
-                if (currentVersion < latestVersion) {
-                    consumer.accept(true, latestVersion.toString())
-                } else consumer.accept(false, latestVersion.toString())
-
-                reader.close()
+                    if (currentVersion < latestVersion) {
+                        consumer(true, latestVersion.toString())
+                    } else consumer(false, latestVersion.toString())
+                }
+            } catch (_: Exception) {
+                consumer(false, currentVersion.toString())
+            } finally {
                 conn.disconnect()
-            } catch (ignored: Exception) {
-                consumer.accept(false, "")
             }
         }
     }
