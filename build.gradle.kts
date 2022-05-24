@@ -37,7 +37,7 @@ tasks {
                 "tokens" to mapOf(
                     "name" to project.name,
                     "version" to project.version,
-                    "description" to "A simple motd plugin for your server.",
+                    "description" to "A simple motd plugin for your minecraft server.",
                     "package" to "${project.group}.${project.name.toLowerCase()}",
                     "website" to "https://r4g3baby.com"
                 )
@@ -48,11 +48,19 @@ tasks {
     shadowJar {
         archiveFileName.set("${project.name}-${project.version}.jar")
 
-        val shaded = "${project.group}.${project.name.toLowerCase()}.shaded"
-        relocate("net.swiftzer.semver", "$shaded.semver")
-        relocate("org.bstats", "$shaded.bstats")
-        relocate("org.jetbrains", "$shaded.jetbrains")
-        relocate("org.intellij", "$shaded.intellij")
-        relocate("kotlin", "$shaded.kotlin")
+        val libs = "${project.group}.${project.name.toLowerCase()}.libs"
+        relocate("net.swiftzer.semver", "$libs.semver")
+        relocate("org.bstats", "$libs.bstats")
+        relocate("org.jetbrains", "$libs.jetbrains")
+        relocate("org.intellij", "$libs.intellij")
+        relocate("kotlin", "$libs.kotlin")
+
+        dependencies {
+            exclude("META-INF/maven/**")
+            exclude("META-INF/versions/**")
+            exclude("META-INF/**.kotlin_module")
+        }
+
+        minimize()
     }
 }
