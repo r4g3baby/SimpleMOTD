@@ -1,0 +1,12 @@
+## Main Config (https://github.com/r4g3baby/SimpleMOTD/blob/main/core/src/main/resources/config.yml)
+# This is where you can customize some plugin settings and the default motd settings.
+
+# Config version (don't change this value)
+version: 1
+
+# Plugin language (supported: en, pt)
+# To use custom messages read the plugin documentation page
+language: en
+
+# Check for updates when the plugin starts
+checkForUpdates: true

@@ -1,6 +1,6 @@
 name: @name@
 version: @version@
-main: @package@.@name@
+main: @package@.BukkitPlugin
 authors: [R4G3_BABY]
 description: "@description@"
 website: @website@

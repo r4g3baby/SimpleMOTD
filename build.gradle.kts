@@ -1,7 +1,6 @@
 plugins {
-    id("com.github.johnrengelman.shadow") version "7.1.2"
-    kotlin("jvm") version "1.6.21"
-    id("maven-publish")
+    id("com.github.johnrengelman.shadow")
+    kotlin("jvm")
 }
 
 group = "com.r4g3baby"
@@ -9,52 +8,62 @@ version = "3.0.0-dev"
 
 repositories {
     mavenCentral()
-
-    maven(uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/"))
 }
 
 dependencies {
-    compileOnly("org.bukkit:bukkit:1.8.8-R0.1-SNAPSHOT")
+    api(project("bukkit"))
+    api(project("bungee"))
+}
 
-    implementation("net.swiftzer.semver:semver:1.2.0")
-    implementation("org.bstats:bstats-bukkit:3.0.0")
+subprojects {
+    group = rootProject.group
+    version = rootProject.version
+}
+
+allprojects {
+    afterEvaluate {
+        tasks {
+            compileJava {
+                options.encoding = "UTF-8"
+                sourceCompatibility = "1.8"
+                targetCompatibility = "1.8"
+            }
+
+            compileKotlin {
+                kotlinOptions.jvmTarget = "1.8"
+            }
+
+            processResources {
+                filteringCharset = "UTF-8"
+                filesMatching(listOf("**plugin.yml", "**bungee.yml", "**project.properties")) {
+                    filter<org.apache.tools.ant.filters.ReplaceTokens>(
+                        "tokens" to mapOf(
+                            "name" to rootProject.name,
+                            "version" to rootProject.version,
+                            "description" to "A simple motd plugin for your minecraft server.",
+                            "package" to "${rootProject.group}.${rootProject.name.toLowerCase()}",
+                            "website" to "https://r4g3baby.com"
+                        )
+                    )
+                }
+            }
+        }
+    }
 }
 
 tasks {
-    compileJava {
-        options.encoding = "UTF-8"
-        sourceCompatibility = "1.8"
-        targetCompatibility = "1.8"
-    }
-
-    compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-
-    processResources {
-        filteringCharset = "UTF-8"
-        filesMatching("**plugin.yml") {
-            filter<org.apache.tools.ant.filters.ReplaceTokens>(
-                "tokens" to mapOf(
-                    "name" to project.name,
-                    "version" to project.version,
-                    "description" to "A simple motd plugin for your minecraft server.",
-                    "package" to "${project.group}.${project.name.toLowerCase()}",
-                    "website" to "https://r4g3baby.com"
-                )
-            )
-        }
-    }
-
     shadowJar {
         archiveFileName.set("${project.name}-${project.version}.jar")
 
-        val libs = "${project.group}.${project.name.toLowerCase()}.libs"
-        relocate("net.swiftzer.semver", "$libs.semver")
-        relocate("org.bstats", "$libs.bstats")
-        relocate("org.jetbrains", "$libs.jetbrains")
-        relocate("org.intellij", "$libs.intellij")
-        relocate("kotlin", "$libs.kotlin")
+        val lib = "${project.group}.${project.name.toLowerCase()}.lib"
+        relocate("net.swiftzer.semver", "$lib.semver")
+        relocate("org.json", "$lib.json")
+        relocate("org.bstats", "$lib.bstats")
+        relocate("org.jetbrains", "$lib.jetbrains")
+        relocate("org.intellij", "$lib.intellij")
+        relocate("kotlin", "$lib.kotlin")
+
+        from(file("LICENSE"))
 
         dependencies {
             exclude("META-INF/maven/**")
@@ -63,25 +72,5 @@ tasks {
         }
 
         minimize()
-    }
-}
-
-publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/r4g3baby/SimpleMOTD")
-            credentials {
-                username = project.findProperty("github.actor") as String? ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("github.token") as String? ?: System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
-
-    publications {
-        register<MavenPublication>("gpr") {
-            artifactId = project.name.toLowerCase()
-            from(components["kotlin"])
-        }
     }
 }
