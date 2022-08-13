@@ -6,9 +6,13 @@ import java.io.FileInputStream
 import java.io.InputStreamReader
 import java.io.Reader
 
-abstract class ConfigFile<T>(parent: File, name: String) : File(parent, "$name.yml"), Config {
+abstract class BaseConfig<T>(parent: File, name: String) : File(parent, "$name.yml"), Config {
     protected abstract fun parseConfigFile(reader: Reader?): T
     protected abstract fun loadVariables(config: T)
+
+    override var version: Int = 0
+    override var language: String = "en"
+    override var checkForUpdates: Boolean = true
 
     open fun loadConfig() {
         if (!this.exists()) {

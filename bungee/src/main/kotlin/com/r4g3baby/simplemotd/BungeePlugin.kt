@@ -1,21 +1,21 @@
 package com.r4g3baby.simplemotd
 
 import com.r4g3baby.simplemotd.api.MOTDManager
+import com.r4g3baby.simplemotd.api.MOTDPlugin
 import com.r4g3baby.simplemotd.bungee.BungeeManager
-import com.r4g3baby.simplemotd.core.MOTDPlugin
 import com.r4g3baby.simplemotd.util.checkForUpdates
 import net.md_5.bungee.api.plugin.Plugin
 import org.bstats.bungeecord.Metrics
 
 class BungeePlugin : Plugin(), MOTDPlugin {
-    private var manager: BungeeManager? = null
+    private lateinit var bungeeManager: BungeeManager
 
     override fun onEnable() {
-        manager = BungeeManager(this)
-        MOTDManager.instance = manager
+        bungeeManager = BungeeManager(this)
+        MOTDManager.instance = bungeeManager
 
         Metrics(this, ProjectInfo.bStatsID)
-        if (manager?.getConfig()?.checkForUpdates() == true) {
+        if (bungeeManager.config.checkForUpdates) {
             proxy.scheduler.runAsync(this) {
                 checkForUpdates { hasUpdate, newVersion ->
                     if (hasUpdate) {
@@ -28,6 +28,12 @@ class BungeePlugin : Plugin(), MOTDPlugin {
     }
 
     override fun onDisable() {
-        manager?.onDisable()
+        if (this::bungeeManager.isInitialized) {
+            bungeeManager.onDisable()
+        }
+    }
+
+    override fun getManager(): MOTDManager {
+        return bungeeManager
     }
 }

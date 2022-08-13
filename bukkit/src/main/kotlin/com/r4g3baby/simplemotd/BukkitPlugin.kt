@@ -1,21 +1,21 @@
 package com.r4g3baby.simplemotd
 
 import com.r4g3baby.simplemotd.api.MOTDManager
+import com.r4g3baby.simplemotd.api.MOTDPlugin
 import com.r4g3baby.simplemotd.bukkit.BukkitManager
-import com.r4g3baby.simplemotd.core.MOTDPlugin
 import com.r4g3baby.simplemotd.util.checkForUpdates
 import org.bstats.bukkit.Metrics
 import org.bukkit.plugin.java.JavaPlugin
 
 class BukkitPlugin : JavaPlugin(), MOTDPlugin {
-    private var manager: BukkitManager? = null
+    private lateinit var bukkitManager: BukkitManager
 
     override fun onEnable() {
-        manager = BukkitManager(this)
-        MOTDManager.instance = manager
+        bukkitManager = BukkitManager(this)
+        MOTDManager.instance = bukkitManager
 
         Metrics(this, ProjectInfo.bStatsID)
-        if (manager?.getConfig()?.checkForUpdates() == true) {
+        if (bukkitManager.config.checkForUpdates) {
             server.scheduler.runTaskAsynchronously(this) {
                 checkForUpdates { hasUpdate, newVersion ->
                     if (hasUpdate) {
@@ -28,6 +28,12 @@ class BukkitPlugin : JavaPlugin(), MOTDPlugin {
     }
 
     override fun onDisable() {
-        manager?.onDisable()
+        if (this::bukkitManager.isInitialized) {
+            bukkitManager.onDisable()
+        }
+    }
+
+    override fun getManager(): MOTDManager {
+        return bukkitManager
     }
 }

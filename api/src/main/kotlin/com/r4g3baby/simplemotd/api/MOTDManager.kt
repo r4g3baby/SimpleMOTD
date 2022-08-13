@@ -8,15 +8,15 @@ interface MOTDManager {
         @JvmStatic
         var instance: MOTDManager? = null
             set(value) {
-                check(field == null) { "Instance has already been set." }
+                check(field == null) { "Manager instance has already been set." }
 
                 field = value
             }
     }
 
-    fun getConfig(): Config
+    val config: Config
 
-    fun getI18n(): I18n
+    val i18n: I18n
 
     fun reloadConfig()
 }

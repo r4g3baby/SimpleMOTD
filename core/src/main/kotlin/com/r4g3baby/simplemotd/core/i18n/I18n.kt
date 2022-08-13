@@ -1,7 +1,7 @@
 package com.r4g3baby.simplemotd.core.i18n
 
 import com.r4g3baby.simplemotd.api.i18n.I18n
-import com.r4g3baby.simplemotd.core.MOTDPlugin
+import com.r4g3baby.simplemotd.api.MOTDPlugin
 import com.r4g3baby.simplemotd.util.translateAlternateColorCodes
 import com.r4g3baby.simplemotd.util.translateHexColorCodes
 import java.io.*
@@ -11,7 +11,7 @@ import java.text.MessageFormat
 import java.util.*
 import java.util.logging.Level
 
-class I18n(language: String = "en", private val plugin: MOTDPlugin) : I18n {
+class I18n(private val plugin: MOTDPlugin, language: String) : I18n {
     private lateinit var currentLocale: Locale
     private lateinit var defaultBundle: ResourceBundle
     private lateinit var customBundle: ResourceBundle
