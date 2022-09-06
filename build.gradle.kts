@@ -57,7 +57,11 @@ tasks {
 
         val lib = "${project.group}.${project.name.toLowerCase()}.lib"
         relocate("net.swiftzer.semver", "$lib.semver")
+        relocate("net.kyori.adventure", "$lib.adventure")
+        relocate("net.kyori.examination", "$lib.examination")
         relocate("org.json", "$lib.json")
+        relocate("com.zaxxer.hikari", "$lib.hikari")
+        relocate("org.slf4j", "$lib.slf4j")
         relocate("org.bstats", "$lib.bstats")
         relocate("org.jetbrains", "$lib.jetbrains")
         relocate("org.intellij", "$lib.intellij")
@@ -67,6 +71,7 @@ tasks {
 
         dependencies {
             exclude("META-INF/maven/**")
+            exclude("META-INF/services/**")
             exclude("META-INF/versions/**")
             exclude("META-INF/**.kotlin_module")
         }

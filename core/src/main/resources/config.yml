@@ -10,3 +10,39 @@ language: en
 
 # Check for updates when the plugin starts
 checkForUpdates: true
+
+# Any changes done to the storage configuration require a server restart
+storage:
+  # Supported database drivers:
+  #  Local: H2, SQLite
+  #  Remote: PostgreSQL, MariaDB, MySQL
+  # Set to "none" to disable player data saving.
+  driver: H2
+  # Prefix used for SimpleMOTD tables
+  tablePrefix: simplemotd_
+
+  # All the settings bellow this point only apply to remote databases
+  address: 127.0.0.1:3306
+  database: minecraft
+  username: simplemotd
+  password: '|D/-\55\^/0|2|)'
+
+  # HikariCP connection pool settings for remote databases
+  # The default provided settings should work fine for most server setups
+  # Do not change these settings unless you know what you're doing!
+  pool:
+    # The maximum number of connections in the pool
+    maximumPoolSize: 8
+    # The minimum number of idle connections in the pool to maintain
+    minimumIdle: 8
+    # The maximum connection lifetime in milliseconds
+    maxLifetime: 1800000
+    # The interval in which connections will be tested for aliveness, thus keeping them alive by
+    #  the act of checking. Value is in milliseconds
+    keepaliveTime: 0
+    # The connection timeout in milliseconds
+    connectionTimeout: 5000
+    # Extra properties to pass on to the data source driver
+    extraProperties:
+      useUnicode: true
+      characterEncoding: utf8
